@@ -7,8 +7,8 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.Rechargeable;
 import org.bukkit.inventory.ItemStack;
 
-public class NanoHelmet extends SlimefunItem implements Rechargeable {
-    public NanoHelmet(ItemGroup exoitems, SlimefunItemStack item, RecipeType type, ItemStack[] recipe) {
+public class NanoChestplate extends SlimefunItem implements Rechargeable {
+    public NanoChestplate(ItemGroup exoitems, SlimefunItemStack item, RecipeType type, ItemStack[] recipe) {
         super(exoitems, item, type, recipe);
     }
     @Override

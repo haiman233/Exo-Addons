@@ -1,10 +1,10 @@
 package spectro.exoaddons;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.core.attributes.Rechargeable;
 import io.github.thebusybiscuit.slimefun4.utils.ChargeUtils;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,10 +12,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import spectro.exoaddons.Armor.NanoBoots;
+import spectro.exoaddons.Armor.NanoChestplate;
 import spectro.exoaddons.Armor.NanoHelmet;
+import spectro.exoaddons.Armor.NanoLeggings;
+
+import static spectro.exoaddons.Items.*;
 
 public class Events implements Listener {
     @EventHandler
@@ -77,9 +83,15 @@ public class Events implements Listener {
             e.setCancelled(true);
         }
     }
-    private final NanoHelmet nanoHelmet = (NanoHelmet) Items.EXO_NANOHELMET.getItem();
+
+    private final NanoHelmet nanoHelmet = (NanoHelmet) EXO_NANO_HELMET.getItem();
+    private final NanoChestplate nanoChestplate = (NanoChestplate) EXO_NANO_CHESTPLATE.getItem();
+    private final NanoLeggings nanoLeggings = (NanoLeggings) EXO_NANO_LEGGINGS.getItem();
+    private final NanoBoots nanoBoots = (NanoBoots) EXO_NANO_BOOTS.getItem();
+
+
     @EventHandler
-    // Cancel the item be damaged if have energy
+    // Cancel the item be damaged have energy
     public void onItemDamage(PlayerItemDamageEvent e) {
         if (e.getItem().hasItemMeta()) {
             final SlimefunItem item = SlimefunItem.getByItem(e.getItem());
@@ -88,37 +100,94 @@ public class Events implements Listener {
             }
         }
     }
+
+    // Verify if the player have the item
+    private boolean canUse(ItemStack playerItem, SlimefunItemStack sfItem) {
+        return playerItem != null
+                && sfItem.getItem().isItem(playerItem);
+    }
+
+    private boolean helmetNewCharge(ItemStack helmet) {
+        final ItemMeta meta = helmet.getItemMeta();
+        final float newCharge = ChargeUtils.getCharge(meta);
+        if (meta instanceof Damageable damageable) {
+            final double chargePercent = (newCharge / nanoHelmet.getMaxItemCharge(helmet)) * 100;
+            final int percentOfMax = (int) ((chargePercent / 100) * helmet.getType().getMaxDurability());
+            final int damage = Math.max(1, helmet.getType().getMaxDurability() - percentOfMax);
+            damageable.setDamage(damage);
+            helmet.setItemMeta(meta);
+        }
+        return false;
+    }
+    private boolean chestNewCharge(ItemStack chest) {
+        final ItemMeta meta = chest.getItemMeta();
+        final float newCharge = ChargeUtils.getCharge(meta);
+        if (meta instanceof Damageable damageable) {
+            final double chargePercent = (newCharge / nanoChestplate.getMaxItemCharge(chest)) * 100;
+            final int percentOfMax = (int) ((chargePercent / 100) * chest.getType().getMaxDurability());
+            final int damage = Math.max(1, chest.getType().getMaxDurability() - percentOfMax);
+            damageable.setDamage(damage);
+            chest.setItemMeta(meta);
+        }
+        return false;
+    }
+    private boolean legsNewCharge(ItemStack legs) {
+        final ItemMeta meta = legs.getItemMeta();
+        final float newCharge = ChargeUtils.getCharge(meta);
+        if (meta instanceof Damageable damageable) {
+            final double chargePercent = (newCharge / nanoLeggings.getMaxItemCharge(legs)) * 100;
+            final int percentOfMax = (int) ((chargePercent / 100) * legs.getType().getMaxDurability());
+            final int damage = Math.max(1, legs.getType().getMaxDurability() - percentOfMax);
+            damageable.setDamage(damage);
+            legs.setItemMeta(meta);
+        }
+        return false;
+    }
+    private boolean bootsNewCharge(ItemStack boots) {
+        final ItemMeta meta = boots.getItemMeta();
+        final float newCharge = ChargeUtils.getCharge(meta);
+        if (meta instanceof Damageable damageable) {
+            final double chargePercent = (newCharge / nanoBoots.getMaxItemCharge(boots)) * 100;
+            final int percentOfMax = (int) ((chargePercent / 100) * boots.getType().getMaxDurability());
+            final int damage = Math.max(1, boots.getType().getMaxDurability() - percentOfMax);
+            damageable.setDamage(damage);
+            boots.setItemMeta(meta);
+        }
+        return false;
+    }
     @EventHandler
-    // Cancel the damage if player have Nano Helmet with Energy equiped
+    // Reduce the damage by half if player have Nano Armor with Energy equiped
     public void onPlayerDamage(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player player && player.getEquipment() != null) {
             final ItemStack helmet = player.getEquipment().getHelmet();
+            final ItemStack chest = player.getEquipment().getChestplate();
+            final ItemStack legs = player.getEquipment().getLeggings();
+            final ItemStack boots = player.getEquipment().getBoots();
             if (e.getFinalDamage() > 0
-                    && helmet != null
-                    && nanoHelmet.isItem(helmet)
-                    && nanoHelmet.removeItemCharge(helmet, Math.max(1, (float) e.getFinalDamage()) * 20)
+            && helmet != null
+            && nanoHelmet.isItem(helmet)
+            && nanoHelmet.removeItemCharge(helmet, Math.max(1, (float) e.getFinalDamage()) * 20)
+            && chest != null
+            && nanoChestplate.isItem(chest)
+            && nanoChestplate.removeItemCharge(chest, Math.max(1, (float) e.getFinalDamage()) * 20)
+            && legs != null
+            && nanoLeggings.isItem(legs)
+            && nanoLeggings.removeItemCharge(legs, Math.max(1, (float) e.getFinalDamage()) * 20)
+            && boots != null
+            && nanoBoots.isItem(boots)
+            && nanoBoots.removeItemCharge(boots, Math.max(1, (float) e.getFinalDamage()) * 20)
             ) {
-                final ItemMeta meta = helmet.getItemMeta();
-                final float newCharge = ChargeUtils.getCharge(meta);
-
-                e.setDamage(0);
-
-                final ComponentBuilder builder = new ComponentBuilder();
-                builder
-                        .append("&9Nano Helmet")
-                        .append("&energia restante: &e")
-                        .append(String.valueOf(nanoHelmet.getItemCharge(helmet)))
-                        .append(" &7/ &a100000 &cJ");
-                if (meta instanceof Damageable damageable) {
-                    final double chargePercent = (newCharge / nanoHelmet.getMaxItemCharge(helmet)) * 100;
-                    final int percentOfMax = (int) ((chargePercent / 100) * helmet.getType().getMaxDurability());
-                    final int damage = Math.max(1, helmet.getType().getMaxDurability() - percentOfMax);
-                    damageable.setDamage(damage);
-                    helmet.setItemMeta(meta);
-                }
-                ((Player) e.getEntity()).spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.create());
+                double damageHalf = e.getDamage() / 2;
+                e.setDamage(damageHalf);
+            } else {
+                return;
             }
+            helmetNewCharge(helmet);
+            chestNewCharge(chest);
+            legsNewCharge(legs);
+            bootsNewCharge(boots);
         }
     }
-
 }
+
+
