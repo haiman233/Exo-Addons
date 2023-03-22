@@ -2,7 +2,6 @@ package spectro.exoaddons;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
-import io.github.thebusybiscuit.slimefun4.core.attributes.Rechargeable;
 import io.github.thebusybiscuit.slimefun4.utils.ChargeUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
@@ -12,14 +11,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import spectro.exoaddons.Armor.NanoBoots;
-import spectro.exoaddons.Armor.NanoChestplate;
-import spectro.exoaddons.Armor.NanoHelmet;
-import spectro.exoaddons.Armor.NanoLeggings;
+import spectro.exoaddons.Armor.NanoArmor;
 
 import static spectro.exoaddons.Items.*;
 
@@ -84,10 +79,10 @@ public class Events implements Listener {
         }
     }
 
-    private final NanoHelmet nanoHelmet = (NanoHelmet) EXO_NANO_HELMET.getItem();
-    private final NanoChestplate nanoChestplate = (NanoChestplate) EXO_NANO_CHESTPLATE.getItem();
-    private final NanoLeggings nanoLeggings = (NanoLeggings) EXO_NANO_LEGGINGS.getItem();
-    private final NanoBoots nanoBoots = (NanoBoots) EXO_NANO_BOOTS.getItem();
+    private final NanoArmor nanoHelmet = (NanoArmor) EXO_NANO_HELMET.getItem();
+    private final NanoArmor nanoChestplate = (NanoArmor) EXO_NANO_CHESTPLATE.getItem();
+    private final NanoArmor nanoLeggings = (NanoArmor) EXO_NANO_LEGGINGS.getItem();
+    private final NanoArmor nanoBoots = (NanoArmor) EXO_NANO_BOOTS.getItem();
 
 
     @EventHandler
@@ -95,7 +90,7 @@ public class Events implements Listener {
     public void onItemDamage(PlayerItemDamageEvent e) {
         if (e.getItem().hasItemMeta()) {
             final SlimefunItem item = SlimefunItem.getByItem(e.getItem());
-            if (item instanceof PassiveElectricRemoval || item instanceof NanoHelmet) {
+            if (item instanceof PassiveElectricRemoval || item instanceof NanoArmor) {
                 e.setCancelled(true);
             }
         }

@@ -1,5 +1,8 @@
 package spectro.exoaddons;
 
+// -> This class has been copied from https://github.com/Slimefun-Addon-Community/LiteXpansion <-
+// -> Please take a look in they addons, very cool ^^ <-
+
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
